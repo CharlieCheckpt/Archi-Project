@@ -13,6 +13,44 @@ void find_etiquette(char*ch){
     }
 }
 
+int instructions(char* str){
+	int i;
+	if (!strcmp(str, "push")) {
+    	i=0;
+	}else if (!strcmp(str, "iPush")){
+    	i=1;
+	}else if (!strcmp(str, "push#")){
+    	i=2;
+	}else if (!strcmp(str, "pop")){
+    	i=3;
+	}else if (!strcmp(str, "iPop")){
+    	i=4;
+	}else if (!strcmp(str, "dup")){
+    	i=5;
+	}else if (!strcmp(str, "op")){
+    	i=6;
+	}else if (!strcmp(str, "jmp")){
+    	i=7;
+	}else if (!strcmp(str, "jpz")){
+    	i=8;
+	}else if (!strcmp(str, "call")){
+    	i=9;
+	}else if (!strcmp(str, "ret")){
+    	i=10;
+	}else if (!strcmp(str, "rnd")){
+    	i=11;
+	}else if (!strcmp(str, "write")){
+    	i=12;
+	}else if (!strcmp(str, "read")){
+    	i=13;
+	}else if (!strcmp(str, "halt")){
+    	i=99;
+	}else{
+		printf("Fonction non définie");
+	}
+	printf("%02X",i);
+//c'est sale mais ça marche :D
+}
 
 int main(){
     FILE*fichier=NULL;
