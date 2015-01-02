@@ -28,10 +28,13 @@ int main(){
 
             char word[T_MAX];
             while(fscanf(fichier,"%s",&word)!=EOF){
-                //parcourir tab banque de données
+                //parcourir tab banque de donnÃ©es
             }
 
         }while(fgets(chaine,T_MAX,fichier)!='\0');
     }
     return 0;
 }
+
+
+//super programme
