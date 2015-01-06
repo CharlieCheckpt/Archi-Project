@@ -1,0 +1,9 @@
+ici: 	read 1000
+	push 1000
+	jpz fin
+	push 1000
+	op 4
+	pop 1000
+	write 1000
+	jmp ici
+fin: 	halt
