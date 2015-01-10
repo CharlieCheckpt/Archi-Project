@@ -3,16 +3,6 @@
 #include <stdlib.h>
 #define T_MAX 256
 
-void find_etiquette(char*ch){
-    int i=0;
-    while(ch[i]!='\0'){
-        if(ch[i]==':'){
-            ch[i]='\0';
-            //printf("%d\n",i);
-        } i++;
-    }
-}
-
 int instructions(char* str){
 	int i;
 	if (!strcmp(str, "push")) {
@@ -46,32 +36,172 @@ int instructions(char* str){
 	}else if (!strcmp(str, "halt")){
     	i=99;
 	}else{
-		printf("Fonction non définie");
+		printf("Invalid function");
+		exit(1);
 	}
-	printf("%02X",i);
-//c'est sale mais ça marche :D
+	return i;
+}
+
+int argtype(char* str){
+	/*
+		0 = pas d'arg
+		1 = un nombre
+		2 = une chaîne
+	 */
+	int i;
+	if (!strcmp(str, "push")) {
+		i=1;
+	}else if (!strcmp(str, "iPush")){
+		i=0;
+	}else if (!strcmp(str, "push#")){
+		i=1;
+	}else if (!strcmp(str, "pop")){
+		i=1;
+	}else if (!strcmp(str, "iPop")){
+		i=0;
+	}else if (!strcmp(str, "dup")){
+		i=0;
+	}else if (!strcmp(str, "op")){
+		i=1;
+	}else if (!strcmp(str, "jmp")){
+		i=2;
+	}else if (!strcmp(str, "jpz")){
+		i=2;
+	}else if (!strcmp(str, "call")){
+		i=2;
+	}else if (!strcmp(str, "ret")){
+		i=0;
+	}else if (!strcmp(str, "rnd")){
+		i=1;
+	}else if (!strcmp(str, "write")){
+		i=1;
+	}else if (!strcmp(str, "read")){
+		i=1;
+	}else if (!strcmp(str, "halt")){
+		i=0;
+	}
+	return i;
+}
+
+typedef struct{
+	char label[T_MAX];
+} Label;
+
+typedef struct{
+	char Label[T_MAX];
+	char inst[T_MAX];
+	char arg[T_MAX];
+} Line;
+
+int countLines(FILE* file){
+	int line_number = 0;
+	char str[T_MAX];
+	if (file!=NULL){
+		while(fgets(str,T_MAX,file)!='\0') {
+			printf("line nb = %d\n", line_number);
+			line_number++;
+		}
+	}
+	return line_number;
+}
+
+Label* createLabelTab(FILE* file, int line_count){
+	Label* label_tab = malloc(sizeof(Label)*line_count);
+	return label_tab;
+}
+
+void fillLabelTab(FILE* file, Label* label_tab){
+	char str[T_MAX];
+	char *word;
+	int i = -1;
+	if (file!=NULL){
+		while(fgets(str,T_MAX,file)) {
+			i++;
+			if (strstr(str, ":") != NULL) {
+				word = strtok(str, " \t\r\n:");
+				printf("mot (%d) = %s\n", i, word);
+
+			}
+		}
+	}
+}
+
+int findLabel(char* str, Label* label_tab){
+	int i;
+	printf("%d", sizeof(label_tab));
+	for(i=0; i< sizeof(label_tab)/ sizeof(Label); i++){
+
+		if(strcmp(label_tab[i].label, str) == 0)
+			return i;
+	}
+	return -1;
 }
 
 int main(){
-    FILE*fichier=NULL;
-    fichier=fopen("assembleur_test.txt","r+");
-    char chaine[T_MAX];
-    int line = 0;
+    FILE*file=NULL;
+	FILE*file2=NULL;
+    file=fopen("assembleur_test.txt","r+");
+	int cl = countLines(file);
 
-    if (fichier!=NULL){
-        fgets(chaine,T_MAX,fichier);
-        do{
-            printf("%d   %s\n",line,chaine);
-            line ++;
+	Label* label_tab = createLabelTab(file, cl);
 
-            char word[T_MAX];
-            while(fscanf(fichier,"%s",&word)!=EOF){
-                //parcourir tab banque de données
-            }
+	fclose(file);
+	file=fopen("assembleur_test.txt","r+");
 
-        }while(fgets(chaine,T_MAX,fichier)!='\0');
-    }
+	fillLabelTab(file, label_tab);
+
+	fclose(file);
+	
+	file=fopen("assembleur_test.txt","r+");
+	file2=fopen("out.txt","w");
+	
+	char str[T_MAX];
+	char *word;
+	char *arg;
+	char *useless;
+	int argint;
+	int line_n = 0;
+	if (file!=NULL){
+		while(fgets(str,T_MAX,file)) {
+			line_n++;
+			//fscanf(file, "%s", &word);
+
+			if (strstr(str, ":") != NULL) {
+				useless = strtok(str, " \t\r\n:");
+				word = strtok(NULL, " \t\r\n:");
+			} else {
+				word = strtok(str, " \t\r\n:");
+			}
+
+			arg = strtok(NULL, " \t\r\n:");
+
+
+			if (argtype(word) == 0) {
+				if(arg != NULL) exit(1);
+				argint = 0;
+			} else if (argtype(word) == 1) {
+				argint = atoi(arg);
+			} else if (argtype(word) == 2) {
+				if (findLabel(arg, label_tab) > line_n) {
+					printf("val = %d\n", findLabel(arg, label_tab));
+					argint = findLabel(arg, label_tab) - line_n +1;
+				} else {
+					printf("val = %d, %s\n", findLabel(arg, label_tab), arg);
+					argint = line_n + 1 - findLabel(arg, label_tab);
+				}
+			}
+
+			printf("word = %s\n",word);
+			printf("argu = %s\n", arg);
+			//fonction qui transforme str en int s'il le faut
+			printf("code = %02X + arg = %08X \n\n",instructions(word), argint);
+			fprintf(file2,"%02X%08X \n\n",instructions(word), argint);
+		}
+	}
+	
+
     return 0;
+
 }
 
 
