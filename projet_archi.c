@@ -136,9 +136,9 @@ void fillLabelTab(FILE* file, Label* label_tab){
 			i++;
 			if (strstr(str, ":") != NULL) {
 				word = strtok(str, " \t\r\n:");
-				printf("mot (%d) = %s\n", i, word);
+				//printf("mot (%d) = %s\n", i, word);
 
-				label_tab[i].label = "hi";
+				strcpy(label_tab[i].label, word);
 			}
 		}
 	}
@@ -146,14 +146,14 @@ void fillLabelTab(FILE* file, Label* label_tab){
 
 //Find a label in the table and returns the line #
 /*
-	On ecrit sizeof(label_tab)/ sizeof(Label) car sizeof(label_tab) renvoie la taille du tableau en bits (et non en nombre de "cases")
+	sizeof(label_tab) = taille du tableau d'etiquettes
  */
 int findLabel(char* str, Label* label_tab){
 	int i;
-	printf("%d", sizeof(label_tab));
-	for(i=0; i< sizeof(label_tab)/ sizeof(Label); i++){
-		if(strcmp(label_tab[i].label, str) == 0)
+	for(i=0; i< sizeof(label_tab); i++){
+		if(strcmp(label_tab[i].label, str) == 0) {
 			return i;
+		}
 	}
 	return -1;
 }
@@ -176,10 +176,10 @@ int main(){
 	fillLabelTab(file, label_tab);
 	fclose(file);
 
-	int i;
-	for(i=0; i< 5; i++){
+	/*int i;
+	for(i=0; i< 10; i++){
 		printf("Dans la case %d, il y a letiquette %s\n", i, label_tab[i].label);
-	}
+	}*/
 	
 	file=fopen(INPUT_FILE,"r+");
 
@@ -197,6 +197,7 @@ int main(){
 		while(fgets(str,T_MAX,file)) {
 			line_n++;
 
+			//Evite l'etiquette a la traduction et met l'instruction dans word
 			if (strstr(str, ":") != NULL) {
 				useless = strtok(str, " \t\r\n:"); //met l'etiquette de cote
 				word = strtok(NULL, " \t\r\n:");
@@ -204,8 +205,8 @@ int main(){
 				word = strtok(str, " \t\r\n:");
 			}
 
+			//Met l'argument dans arg
 			arg = strtok(NULL, " \t\r\n:");
-
 
 			if (argtype(word) == 0) {
 				if(arg != NULL) exit(1);
@@ -215,6 +216,7 @@ int main(){
 			} else if (argtype(word) == 2) {
 				if (findLabel(arg, label_tab) > line_n) {
 					printf("val = %d\n", findLabel(arg, label_tab));
+
 					argint = findLabel(arg, label_tab) - line_n +1;
 				} else {
 					printf("val = %d, %s\n", findLabel(arg, label_tab), arg);
