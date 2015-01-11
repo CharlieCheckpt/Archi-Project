@@ -3,7 +3,10 @@
 #include <stdlib.h>
 
 #define T_MAX 256
-#define INPUT_FILE "test.txt"
+#define INPUT_FILE "assembleur_test.txt"
+
+//Global variable
+int line_n = 0;
 
 //Label
 typedef struct{
@@ -44,7 +47,7 @@ int instructions(char* str){
 	}else if (!strcmp(str, "halt")){
     	i=99;
 	}else{
-		printf("ERROR: command not found: %s\n", str);
+		printf("ERROR: command not found: %s at line %d\n", str, line_n);
 		exit(1);
 	}
 	return i;
@@ -107,7 +110,7 @@ int countLines(FILE* file){
 Label* createLabelTab(int line_count){
 	Label* label_tab = malloc(sizeof(Label)*line_count);
 	if (label_tab == NULL){
-		printf("ERROR: Out of memory\n");
+		printf("ERROR: out of memory\n");
 		exit(1);
 	}
 	return label_tab;
@@ -152,7 +155,7 @@ int findLabel(char* str, Label* label_tab){
 			return i;
 		}
 	}
-	printf("ERROR: label not found: %s\n", str);
+	printf("ERROR: label not found: %s at line %d\n", str, line_n);
 	exit(1);
 }
 
@@ -198,7 +201,6 @@ int main(){
 	char *arg; //argument de type chaine de caracteres
 	char *useless; //pour ignorer les etiquettes lors de la traduction
 	int argint; //argument de type entier
-	int line_n = 0; //ligne #
 
 	while(fgets(str,T_MAX,file)) {
 		line_n++;
@@ -221,7 +223,7 @@ int main(){
 		//On attend aucun argument
 		if (argtype(word) == 0) {
 			if(arg != NULL) {
-				printf("ERROR: too many arguments to function ‘%s’ at line \n", word, line_n);
+				printf("ERROR: too many arguments to function ‘%s’ at line %d\n", word, line_n);
 				exit(1);
 			}
 			argint = 0;
@@ -267,7 +269,7 @@ int main(){
 	fclose(file2);
 
 	free(label_tab); //Liberation de la memoire
-
+	printf("It's OKAY !! :D");
     return 0;
 }
 
