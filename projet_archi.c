@@ -221,7 +221,7 @@ int main(){
 		//On attend aucun argument
 		if (argtype(word) == 0) {
 			if(arg != NULL) {
-				printf("ERROR: too many arguments to function ‘%s’\n", word);
+				printf("ERROR: too many arguments to function ‘%s’ at line \n", word, line_n);
 				exit(1);
 			}
 			argint = 0;
@@ -261,7 +261,7 @@ int main(){
 		//printf("code intruction : %02X // arg = %08X \n\n",instructions(word), argint);
 
 		//ecriture sur le fichier de sortie file2
-		//fprintf(file2,"%02X %08X\n",instructions(word), argint);
+		fprintf(file2,"%02X %08X\n",instructions(word), argint);
 	}
 	fclose(file);
 	fclose(file2);
