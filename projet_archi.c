@@ -44,7 +44,7 @@ int instructions(char* str){
 	}else if (!strcmp(str, "halt")){
     	i=99;
 	}else{
-		printf("ERROR: Invalid function\n");
+		printf("ERROR: command not found: %s\n", str);
 		exit(1);
 	}
 	return i;
@@ -88,9 +88,6 @@ int argtype(char* str){
 		i=1;
 	}else if (!strcmp(str, "halt")){
 		i=0;
-	}else{
-		printf("ERROR: Invalid argument\n");
-		exit(1);
 	}
 	return i;
 }
@@ -160,11 +157,14 @@ int findLabel(char* str, Label* label_tab){
 }
 
 //Int test
-int is_int(char const* p){
-	char* temp;
-	sprintf(temp, "%d", p);
-	printf("temp = %s et strcmp = %d\n", temp, strcmp(temp, p));
-	return strcmp(temp, p) == 0;
+/*
+	Renvoie 1 si str est un entier, 0 sinon
+	atoi convertit une chaine en int
+ */
+int is_int(char const * str) {
+	char buf[256];
+	sprintf(buf, "%d", atoi(str));
+	return (strcmp(buf, str) == 0);
 }
 
 int main(){
@@ -173,7 +173,7 @@ int main(){
 
     file=fopen(INPUT_FILE,"r+");
 	if (file==NULL){
-		printf("ERROR: Unexistant file\n");
+		printf("ERROR: unexistant file\n");
 		exit(1);
 	}
 
@@ -211,18 +211,48 @@ int main(){
 			word = strtok(str, " \t\r\n");
 		}
 
+		//Teste l'existence de l'instruction
+		int functiontest = instructions(word);
+
 		//Met l'argument dans arg
 		arg = strtok(NULL, " \t\r\n:");
 
 		//Teste les types d'arguments attendus et le change en entier
+		//On attend aucun argument
 		if (argtype(word) == 0) {
-			if(arg != NULL) exit(1);
+			if(arg != NULL) {
+				printf("ERROR: too many arguments to function ‘%s’\n", word);
+				exit(1);
+			}
 			argint = 0;
-		} else if (argtype(word) == 1) {
-			//VERIFIER SI WORD EST UN NOMBRE
-			argint = atoi(arg); //atoi convertit une chaine en int
-		} else if (argtype(word) == 2) {
-			//VERIFIER SI WORD EST UN MOT
+		}
+		//On attend un nombre
+		else if (argtype(word) == 1) {
+			if (arg == NULL) {
+				printf("ERROR: too few arguments to function ‘%s’ at line %d\n", word, line_n);
+				exit(1);
+			} else if (is_int(arg) == 0) {
+				printf("ERROR: expected ‘int’ argument to function ‘%s’ at line %d\n", word, line_n);
+				exit(1);
+			} else if (strtok(NULL, " \t\r\n") != NULL) {
+				printf("ERROR: too many arguments to function ‘%s’ at line %d\n", word, line_n);
+				exit(1);
+			}
+			argint = atoi(arg);
+
+		}
+		//On attend une etiquette
+		else if (argtype(word) == 2) {
+			if (arg == NULL) {
+				printf("ERROR: too few arguments to function ‘%s’ at line %d\n", word, line_n);
+				exit(1);
+			} else if (is_int(arg) == 1) {
+				printf("ERROR: expected ‘char *’ but argument is of type ‘int’ at line %d\n", line_n);
+				exit(1);
+			} else if (strtok(NULL, " \t\r\n") != NULL) {
+				printf("ERROR: too many arguments to function ‘%s’ at line %d\n", word, line_n);
+				exit(1);
+			}
 			argint = findLabel(arg, label_tab) - line_n; //difference entre la position actuelle et de l'etiquette
 		}
 
@@ -236,7 +266,7 @@ int main(){
 	fclose(file);
 	fclose(file2);
 
-	free(label_tab); //Liberation
+	free(label_tab); //Liberation de la memoire
 
     return 0;
 }
