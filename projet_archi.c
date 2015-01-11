@@ -150,7 +150,7 @@ void fillLabelTab(FILE* file, Label* label_tab){
  */
 int findLabel(char* str, Label* label_tab){
 	int i;
-	for(i=0; i< sizeof(label_tab); i++){
+	for(i=0; i<= sizeof(label_tab); i++){
 		if(strcmp(label_tab[i].label, str) == 0) {
 			return i;
 		}
@@ -200,36 +200,31 @@ int main(){
 			//Evite l'etiquette a la traduction et met l'instruction dans word
 			if (strstr(str, ":") != NULL) {
 				useless = strtok(str, " \t\r\n:"); //met l'etiquette de cote
-				word = strtok(NULL, " \t\r\n:");
+				word = strtok(NULL, " \t\r\n"); //prend la suite (jusqu'a " \t\r\n") et le met dans word
 			} else {
-				word = strtok(str, " \t\r\n:");
+				word = strtok(str, " \t\r\n");
 			}
 
 			//Met l'argument dans arg
 			arg = strtok(NULL, " \t\r\n:");
 
+			//Teste les types d'arguments attendus et le change en entier
 			if (argtype(word) == 0) {
 				if(arg != NULL) exit(1);
 				argint = 0;
 			} else if (argtype(word) == 1) {
-				argint = atoi(arg);
+				argint = atoi(arg); //atoi convertit une chaine en int
 			} else if (argtype(word) == 2) {
-				if (findLabel(arg, label_tab) > line_n) {
-					printf("val = %d\n", findLabel(arg, label_tab));
-
-					argint = findLabel(arg, label_tab) - line_n +1;
-				} else {
-					printf("val = %d, %s\n", findLabel(arg, label_tab), arg);
-					argint = line_n + 1 - findLabel(arg, label_tab);
-				}
+				argint = findLabel(arg, label_tab) - line_n; //difference entre la position actuelle et de l'etiquette
 			}
 
-			printf("word = %s\n",word);
-			printf("argu = %s\n", arg);
-			//fonction qui transforme str en int s'il le faut
+			printf("instruction = %s // argu = %s\n", word, arg);
+
 			printf("code = %02X + arg = %08X \n\n",instructions(word), argint);
-			//fprintf(file2,"%02X%08X \n\n",instructions(word), argint);
+			fprintf(file2,"%02X%08X \n",instructions(word), argint);
 		}
+		fclose(file);
+		fclose(file2);
 	}
 	
 
