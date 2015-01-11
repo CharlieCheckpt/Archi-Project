@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #define T_MAX 256
-#define INPUT_FILE "assembleur_test.txt"
+#define INPUT_FILE "test.txt"
 
 //Label
 typedef struct{
@@ -44,7 +44,7 @@ int instructions(char* str){
 	}else if (!strcmp(str, "halt")){
     	i=99;
 	}else{
-		printf("Invalid function");
+		printf("ERROR: Invalid function\n");
 		exit(1);
 	}
 	return i;
@@ -89,7 +89,7 @@ int argtype(char* str){
 	}else if (!strcmp(str, "halt")){
 		i=0;
 	}else{
-		printf("Invalid argument");
+		printf("ERROR: Invalid argument\n");
 		exit(1);
 	}
 	return i;
@@ -99,11 +99,9 @@ int argtype(char* str){
 int countLines(FILE* file){
 	int line_number = 0;
 	char str[T_MAX];
-	if (file!=NULL){
-		while(fgets(str,T_MAX,file)!='\0') {
-			//printf("line nb = %d\n", line_number);
-			line_number++;
-		}
+	while(fgets(str,T_MAX,file)!='\0') {
+		//printf("line nb = %d\n", line_number);
+		line_number++;
 	}
 	return line_number;
 }
@@ -111,6 +109,10 @@ int countLines(FILE* file){
 //Label table creator
 Label* createLabelTab(int line_count){
 	Label* label_tab = malloc(sizeof(Label)*line_count);
+	if (label_tab == NULL){
+		printf("ERROR: Out of memory\n");
+		exit(1);
+	}
 	return label_tab;
 }
 
@@ -131,15 +133,13 @@ void fillLabelTab(FILE* file, Label* label_tab){
 	char str[T_MAX];
 	char *word;
 	int i = -1;
-	if (file!=NULL){
-		while(fgets(str,T_MAX,file)) {
-			i++;
-			if (strstr(str, ":") != NULL) {
-				word = strtok(str, " \t\r\n:");
-				//printf("mot (%d) = %s\n", i, word);
+	while(fgets(str,T_MAX,file)) {
+		i++;
+		if (strstr(str, ":") != NULL) {
+			word = strtok(str, " \t\r\n:");
 
-				strcpy(label_tab[i].label, word);
-			}
+			//printf("mot (%d) = %s\n", i, word);
+			strcpy(label_tab[i].label, word);
 		}
 	}
 }
@@ -155,7 +155,16 @@ int findLabel(char* str, Label* label_tab){
 			return i;
 		}
 	}
-	return -1;
+	printf("ERROR: Undefined label\n");
+	exit(1);
+}
+
+//Int test
+int is_int(char const* p){
+	char* temp;
+	sprintf(temp, "%d", p);
+	printf("temp = %s et strcmp = %d\n", temp, strcmp(temp, p));
+	return strcmp(temp, p) == 0;
 }
 
 int main(){
@@ -163,6 +172,10 @@ int main(){
 	FILE* file2=NULL;
 
     file=fopen(INPUT_FILE,"r+");
+	if (file==NULL){
+		printf("ERROR: Unexistant file\n");
+		exit(1);
+	}
 
 	//totalline = nombre de lignes
 	int totalline = countLines(file);
@@ -176,14 +189,8 @@ int main(){
 	fillLabelTab(file, label_tab);
 	fclose(file);
 
-	/*int i;
-	for(i=0; i< 10; i++){
-		printf("Dans la case %d, il y a letiquette %s\n", i, label_tab[i].label);
-	}*/
-	
+	//creation fichier a exporter
 	file=fopen(INPUT_FILE,"r+");
-
-	//creation fichier d'exportation
 	file2=fopen("out.txt","w");
 	
 	char str[T_MAX];
@@ -191,43 +198,49 @@ int main(){
 	char *arg; //argument de type chaine de caracteres
 	char *useless; //pour ignorer les etiquettes lors de la traduction
 	int argint; //argument de type entier
-	int line_n = 0;
+	int line_n = 0; //ligne #
 
-	if (file!=NULL){
-		while(fgets(str,T_MAX,file)) {
-			line_n++;
+	while(fgets(str,T_MAX,file)) {
+		line_n++;
 
-			//Evite l'etiquette a la traduction et met l'instruction dans word
-			if (strstr(str, ":") != NULL) {
-				useless = strtok(str, " \t\r\n:"); //met l'etiquette de cote
-				word = strtok(NULL, " \t\r\n"); //prend la suite (jusqu'a " \t\r\n") et le met dans word
-			} else {
-				word = strtok(str, " \t\r\n");
-			}
-
-			//Met l'argument dans arg
-			arg = strtok(NULL, " \t\r\n:");
-
-			//Teste les types d'arguments attendus et le change en entier
-			if (argtype(word) == 0) {
-				if(arg != NULL) exit(1);
-				argint = 0;
-			} else if (argtype(word) == 1) {
-				argint = atoi(arg); //atoi convertit une chaine en int
-			} else if (argtype(word) == 2) {
-				argint = findLabel(arg, label_tab) - line_n; //difference entre la position actuelle et de l'etiquette
-			}
-
-			printf("instruction = %s // argu = %s\n", word, arg);
-
-			printf("code = %02X + arg = %08X \n\n",instructions(word), argint);
-			fprintf(file2,"%02X%08X \n",instructions(word), argint);
+		//Evite l'etiquette a la traduction et met l'instruction dans word
+		if (strstr(str, ":") != NULL) {
+			useless = strtok(str, " \t\r\n:"); //met l'etiquette de cote
+			word = strtok(NULL, " \t\r\n"); //prend la suite (jusqu'a " \t\r\n") et le met dans word
+		} else {
+			word = strtok(str, " \t\r\n");
 		}
-		fclose(file);
-		fclose(file2);
+
+		//Met l'argument dans arg
+		arg = strtok(NULL, " \t\r\n:");
+
+		//Teste les types d'arguments attendus et le change en entier
+		if (argtype(word) == 0) {
+			if(arg != NULL) exit(1);
+			argint = 0;
+		} else if (argtype(word) == 1) {
+			//VERIFIER SI WORD EST UN NOMBRE
+			argint = atoi(arg); //atoi convertit une chaine en int
+		} else if (argtype(word) == 2) {
+			//VERIFIER SI WORD EST UN MOT
+			argint = findLabel(arg, label_tab) - line_n; //difference entre la position actuelle et de l'etiquette
+		}
+
+		//printf de verification
+		//printf("instruction : %s // argument : %s\n", word, arg);
+		//printf("code intruction : %02X // arg = %08X \n\n",instructions(word), argint);
+
+		//ecriture sur le fichier de sortie file2
+		//fprintf(file2,"%02X %08X\n",instructions(word), argint);
 	}
-	
+	fclose(file);
+	fclose(file2);
+
+	free(label_tab); //Liberation
 
     return 0;
-
 }
+
+/*
+Copyright © 2014, Philippe NGUYEN & Charlie Saillard
+*/
