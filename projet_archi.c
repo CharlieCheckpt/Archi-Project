@@ -10,7 +10,7 @@ typedef struct{
 	char label[T_MAX];
 } Label;
 
-//Intructions to int
+//Intructions to int & test
 int instructions(char* str){
 	int i;
 	if (!strcmp(str, "push")) {
@@ -152,7 +152,7 @@ int findLabel(char* str, Label* label_tab){
 			return i;
 		}
 	}
-	printf("ERROR: Undefined label\n");
+	printf("ERROR: label not found: %s\n", str);
 	exit(1);
 }
 
@@ -171,7 +171,7 @@ int main(){
     FILE* file=NULL;
 	FILE* file2=NULL;
 
-    file=fopen(INPUT_FILE,"r+");
+	file=fopen(INPUT_FILE,"r+");
 	if (file==NULL){
 		printf("ERROR: unexistant file\n");
 		exit(1);
