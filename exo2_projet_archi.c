@@ -14,7 +14,7 @@ int SP=0; // num de la 1ère case libre de la pile(ds mem)
 
 push(char*s)
 {
-    int a=strtol(&s[3],NULL,16); // convertit en nbre hexadecimal ce qu'il y a après l'espace
+    int a=strtol(s,NULL,16); // convertit en nbre hexadecimal la chaine de caractères.
     mem[SP++]=a; // incrementation apres
     PC++;
 }
@@ -22,19 +22,19 @@ push(char*s)
 iPush() // pas fini
 {
     int a=mem[SP-1];
-    SP--;
+    SP-1=a;
 }
 
 push_i(char*s)
 {
-    int a=strtol(&s[3],NULL,16);
+    int a=strtol(s,NULL,16);
     T[SP++]=a;
     PC++;
 }
 
 pop(char*s)
 {
-    int a=strtol(&s[3],NULL,16);
+    int a=strtol(s,NULL,16);
     mem[a]=mem[--SP];//decrementation avant
     PC++;
 }
@@ -56,61 +56,58 @@ Fill_tab_instructions(FILE*fichier) // remplissage du tab d'instructions
 
 code_test(char*s) // tests du code assembleur(2 premières lettres de l'instruction)
 {
-    if(s[0]=='0'){
-        switch(s[1])
-        {
-        case '0':
-            push(s);
-            break;
-        case '1':
-            iPush();
-            break;
-        case '2':
-            push_val(s);
-            break;
-        case '3':
-            pop(s);
-            break;
-        case '4':
-            iPop();
-            break;
-        case '5':
-            dup();
-            break;
-        case '6':
-            op(s);
-            break;
-        case '7':
-            jmp(s);
-            break;
-        case '8':
-            jpz(s);
-            break;
-        case '9':
-            call(s);
-            break;
-        }
-    }
-    else{
-        switch(s[0])
-        {
-        case 'A':
-            ret();
-            break;
-        case 'B':
-            rnd(s);
-            break;
-        case 'C':
-            write(s);
-            break;
-        case 'D':
-            read(s);
-            break;
-        default:
-            halt();
-    }
+    char *buf=strtok(s," "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
+    int cod=strtol(buf,NULL,16);
+    switch(cod)
+    {
+    case 0:
+        push(s);
+        break;
+    case 1:
+        iPush();
+        break;
+    case 2:
+        push_val(s);
+        break;
+    case 3:
+        pop(s);
+        break;
+    case 4:
+        iPop();
+        break;
+    case 5:
+        dup();
+        break;
+    case 6:
+        op(s);
+        break;
+    case 7:
+        jmp(s);
+        break;
+    case 8:
+        jpz(s);
+        break;
+    case 9:
+        call(s);
+        break;
+    case 10:
+        ret();
+        break;
+    case 11:
+        rnd(s);
+        break;
+    case 12:
+        write(s);
+        break;
+    case 13:
+        read(s);
+        break;
+    case 99:
+        halt();
+        break;
     }
 }
+
 
 int main()
 {
