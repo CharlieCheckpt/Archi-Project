@@ -173,17 +173,19 @@ write(char*s) //OK
 {
     int a=strtol(s,NULL,16);
     printf("%d\n",mem[a]);
+    PC++;
 }
 
 read(char*s) //OK
 {
     int a=strtol(s,NULL,16);
     scanf("rentrez une valeur svp : %d",&mem[a]);
+    PC++;
 }
 
 halt(int*p)
 {
-   *p==0;
+   *p=0;
 }
 
 Fill_tab_instructions(FILE*fichier) // remplissage du tab d'instructions
@@ -197,23 +199,25 @@ Fill_tab_instructions(FILE*fichier) // remplissage du tab d'instructions
     }while(fgets(chaine,T_MAX,fichier)!=NULL);
 }
 
-code_test(char*s,int*p) // tests du code assembleur(2 premières lettres de l'instruction)
+code_test(char s[],int*p) // tests du code assembleur(2 premières lettres de l'instruction)
 {
-    char *buf=strtok(s," "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
+    printf("je suis dans la fonction code_test");
+    char*buf=strtok(s," "); // si s=0D 000003E8 --> buf=0D
+    char*arg=strtok(NULL," "); //arg=000003E8
     int cod=strtol(buf,NULL,16);
     switch(cod)
     {
     case 0:
-        push(s);
+        push(arg);
         break;
     case 1:
         iPush();
         break;
     case 2:
-        push_val(s);
+        push_val(arg);
         break;
     case 3:
-        pop(s);
+        pop(arg);
         break;
     case 4:
         iPop();
@@ -222,31 +226,34 @@ code_test(char*s,int*p) // tests du code assembleur(2 premières lettres de l'ins
         dup();
         break;
     case 6:
-        op(s);
+        op(arg);
         break;
     case 7:
-        jmp(s);
+        jmp(arg);
         break;
     case 8:
-        jpz(s);
+        jpz(arg);
         break;
     case 9:
-        call(s);
+        call(arg);
         break;
     case 10:
         ret();
         break;
     case 11:
-        rnd(s);
+        rnd(arg);
         break;
     case 12:
-        write(s);
+        write(arg);
         break;
     case 13:
-        read(s);
+        read(arg);
         break;
     case 99:
         halt(p);
+        break;
+    default:
+        printf("problem");
         break;
     }
 }
@@ -257,12 +264,13 @@ int main()
     FILE* fichier=NULL;
     srand(time(NULL)); // nombre aleatoire.
     fichier=fopen("out.txt","r+");
+    int*p;
+    *p=1;
     if(fichier!=NULL){
         Fill_tab_instructions(fichier);
         fclose(fichier);
-        int*p;
-        *p=1;
-        while(T[PC]!=NULL && *p==1){ // on regarde chaque instruction du tableau
+        printf("tab filled\n");
+        while(*p==1){ // on regarde chaque instruction du tableau
             code_test(T[PC],p);
         }
         printf("end of program");
