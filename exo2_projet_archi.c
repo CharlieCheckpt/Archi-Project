@@ -199,10 +199,12 @@ Fill_tab_instructions(FILE*fichier) // remplissage du tab d'instructions
     }while(fgets(chaine,T_MAX,fichier)!=NULL);
 }
 
-code_test(char s[],int*p) // tests du code assembleur(2 premières lettres de l'instruction)
+code_test(char *s,int*p) // tests du code assembleur(2 premières lettres de l'instruction)
 {
+    char instruction[T_MAX]; // tente de contouner le pb de strtok qui ne veut pas de const char* ??
+    strcpy(instruction,s);
     printf("je suis dans la fonction code_test");
-    char*buf=strtok(s," "); // si s=0D 000003E8 --> buf=0D
+    char*buf[T_MAX]=strtok(instruction," "); // si s=0D 000003E8 --> buf=0D
     char*arg=strtok(NULL," "); //arg=000003E8
     int cod=strtol(buf,NULL,16);
     switch(cod)
@@ -262,7 +264,7 @@ code_test(char s[],int*p) // tests du code assembleur(2 premières lettres de l'i
 int main()
 {
     FILE* fichier=NULL;
-    srand(time(NULL)); // nombre aleatoire.
+    srand(time(NULL)); // nombre aleatoire. sert pour la fonction
     fichier=fopen("out.txt","r+");
     int*p;
     *p=1;
@@ -271,7 +273,7 @@ int main()
         fclose(fichier);
         printf("tab filled\n");
         while(*p==1){ // on regarde chaque instruction du tableau
-            code_test(T[PC],p);
+            code_test(T[PC],p); // peut-on utiliser strtok avec T[PC] ?? c'est peut etre le bug.
         }
         printf("end of program");
     }
