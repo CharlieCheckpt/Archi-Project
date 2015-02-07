@@ -207,7 +207,7 @@ void Fill_tab_instructions(FILE *fichier) // remplissage du tab d'instructions
     printf("Fill tab ok");
 }
 
-code_test(char *s) // tests du code assembleur(2 premieres lettres de l'instruction)
+void code_test(char *s) // tests du code assembleur(2 premieres lettres de l'instruction)
 {
     char *buf = strtok(s, " "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
     long cod = strtol(buf, NULL, 16);
