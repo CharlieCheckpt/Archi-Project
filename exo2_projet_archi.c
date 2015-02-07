@@ -176,14 +176,14 @@ rnd(char *s) // ?
 write(char *s) //OK
 {
     long a = strtol(s, NULL, 16);
-    printf("%l\n", mem[a]);
+    printf("%ld\n", mem[a]);
 }
 
 read(char *s) //OK
 {
     long a = strtol(s, NULL, 16);
     printf("rentrez une valeur svp : ");
-    scanf("%l", &mem[a]);
+    scanf("%ld", &mem[a]);
 }
 
 halt() {
