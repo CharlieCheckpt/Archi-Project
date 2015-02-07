@@ -207,6 +207,66 @@ void Fill_tab_instructions(FILE *fichier) // remplissage du tab d'instructions
     printf("Fill tab ok");
 }
 
+<<<<<<< HEAD
+code_test(char *s,int*p) // tests du code assembleur(2 premières lettres de l'instruction)
+{
+    char instruction[T_MAX]; // tente de contouner le pb de strtok qui ne veut pas de const char* ??
+    strcpy(instruction,s);
+    printf("je suis dans la fonction code_test");
+    char*buf[T_MAX]=strtok(instruction," "); // si s=0D 000003E8 --> buf=0D
+    char*arg=strtok(NULL," "); //arg=000003E8
+    int cod=strtol(buf,NULL,16);
+    switch(cod)
+    {
+    case 0:
+        push(arg);
+        break;
+    case 1:
+        iPush();
+        break;
+    case 2:
+        push_val(arg);
+        break;
+    case 3:
+        pop(arg);
+        break;
+    case 4:
+        iPop();
+        break;
+    case 5:
+        dup();
+        break;
+    case 6:
+        op(arg);
+        break;
+    case 7:
+        jmp(arg);
+        break;
+    case 8:
+        jpz(arg);
+        break;
+    case 9:
+        call(arg);
+        break;
+    case 10:
+        ret();
+        break;
+    case 11:
+        rnd(arg);
+        break;
+    case 12:
+        write(arg);
+        break;
+    case 13:
+        read(arg);
+        break;
+    case 99:
+        halt(p);
+        break;
+    default:
+        printf("problem");
+        break;
+=======
 code_test(char *s) // tests du code assembleur(2 premieres lettres de l'instruction)
 {
     char *buf = strtok(s, " "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
@@ -259,23 +319,41 @@ code_test(char *s) // tests du code assembleur(2 premieres lettres de l'instruct
             break;
         default:
             exit(1);
+>>>>>>> origin/master
     }
 }
 
 
+<<<<<<< HEAD
+int main()
+{
+    FILE* fichier=NULL;
+    srand(time(NULL)); // nombre aleatoire. sert pour la fonction
+    fichier=fopen("out.txt","r+");
+    int*p;
+    *p=1;
+    if(fichier!=NULL){
+=======
 int main() {
     FILE *fichier = NULL;
     srand((unsigned int) time(NULL)); // nombre aleatoire.
     fichier = fopen("out.txt", "r+");
     if (fichier != NULL) {
+>>>>>>> origin/master
         Fill_tab_instructions(fichier);
         printf("test1");
         fclose(fichier);
+<<<<<<< HEAD
+        printf("tab filled\n");
+        while(*p==1){ // on regarde chaque instruction du tableau
+            code_test(T[PC],p); // peut-on utiliser strtok avec T[PC] ?? c'est peut etre le bug.
+=======
 
         while (T[PC] != NULL && p == 1) { // on regarde chaque instruction du tableau
             printf("t(pc) = %s", T[PC]);
             code_test(T[PC]);
             printf("p = %d", p);
+>>>>>>> origin/master
         }
         printf("end of program");
     }
