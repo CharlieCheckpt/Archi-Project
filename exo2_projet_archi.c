@@ -203,7 +203,7 @@ void Fill_tab_instructions(FILE *fichier) // remplissage du tab d'instructions
         printf("!FIN! dans chaine[%d], il y a : %s\n", i, chaine);
         fgets(chaine, T_MAX, fichier);
         printf("OK");
-    } while (i < 5);
+    } while (fgets(chaine,T_MAX,fichier)!=NULL);
     printf("Fill tab ok");
 }
 
