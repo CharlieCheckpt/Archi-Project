@@ -1,4 +1,4 @@
-ici: 	read 1000
+ici: 	ready 1000
 	push 1000
 	jpz fin
 	push 1000

@@ -10,58 +10,54 @@
 // "Le programme est le simulateur qui recupere de programme ecrit en langage machine et execute instruction apres instruction"
 // on prend PC=0 et SP=0
 
+typedef struct {
+    char instruction[20];
+} Line;
 
-char *T[LINES_MAX]; // tableau d'instructions.
-long mem[5000];
-// tab representant la memoire dans laquelle est stockee la pile, ainsi que les variables.
-int PC = 0; // "pointe" sur une cellule du tableau d'instructions. adresse de la prochaine execution a executer.
+
+Line insTab[LINES_MAX]; // tableau d'instructions
+long mem[5000]; // tab representant la memoire dans laquelle est stockee la pile, ainsi que les variables
+int PC = 0; // "pointe" sur une cellule du tableau d'instructions. adresse de la prochaine execution a executer
 int SP = 0; // num de la 1ere case libre de la pile(dans mem)
 int p = 1;
 
-push(char *s) //OK
-{
+void push(char *s){
     long a = strtol(s, NULL, 16); // convertit en nbre hexadecimal la chaine de caracteres.
     mem[SP++] = a; // incrementation apres
     PC++;
 }
 
-iPush() // OK
-{
+void iPush(){
     long x = mem[SP - 1];
     mem[SP - 1] = mem[x];
     PC++;
 }
 
-push_val(char *s) //OK
-{
+void push_val(char *s){
     long a = strtol(s, NULL, 16);
     mem[SP++] = a;
     PC++;
 }
 
-pop(char *s) //OK
-{
+void pop(char *s){
     long a = strtol(s, NULL, 16);
     mem[a] = mem[--SP];//decrementation avant
     PC++;
 }
 
-iPop() //OK
-{
+void iPop(){
     mem[mem[SP - 1]] = mem[SP - 2];
     SP -= 2;
     PC++;
 }
 
-dup() //OK
-{
+void dup(){
     mem[SP] = mem[SP - 1];
     SP++;
     PC++;
 }
 
-op(char *s) // ?
-{
+void op(char *s){
     long a = strtol(s, NULL, 16);
     switch (a) {
         case 0: // et logique bit a bit
@@ -138,34 +134,29 @@ op(char *s) // ?
     PC++;
 }
 
-jmp(char *s) //OK
-{
+void jmp(char *s){
     long a = strtol(s, NULL, 16);
     PC += a;
 }
 
-jpz(char *s) //OK
-{
+void jpz(char *s){
     long a = strtol(s, NULL, 16);
     long x = mem[--SP];
     if (x == 0) PC += a;
 }
 
-call(char *s) // ?
-{
+void call(char *s){
     long a = strtol(s, NULL, 16);
     mem[SP++] = (long) &T[PC];
     PC += a;
 }
 
-ret()// ?
-{
+void ret(){
     SP--;
     PC++;
 }
 
-rnd(char *s) // ?
-{
+void rnd(char *s){
     long a = strtol(s, NULL, 16);
     long nb_alea;
     nb_alea = (rand() % a); // nbre aleatoire entre 0 et a-1;
@@ -173,44 +164,46 @@ rnd(char *s) // ?
     PC++;
 }
 
-write(char *s) //OK
-{
+void write(char *s){
     long a = strtol(s, NULL, 16);
     printf("%ld\n", mem[a]);
+    PC++;
 }
 
-read(char *s) //OK
-{
+void read(char *s){
     long a = strtol(s, NULL, 16);
     printf("rentrez une valeur svp : ");
     scanf("%ld", &mem[a]);
+    PC++;
 }
 
-halt() {
+void halt() {
     p = 0;
 }
 
-void Fill_tab_instructions(FILE *fichier) // remplissage du tab d'instructions
-{
+void Fill_tab_instructions(FILE *fichier){ // remplissage du tab d'instructions
     int i = 0;
     char chaine[T_MAX];
     do {
-        //strcpy(T[i], chaine);
+        strcpy(insTab[i].instruction, chaine);
         printf("!DEBUT! dans chaine[%d], il y a : %s", i, chaine);
-        T[i] = chaine;
-        printf("dans T[%d], il y a : %s", i, T[i]);
+        //T[i] = chaine;
+        printf("dans T[%d], il y a : %s", i, insTab[i].instruction);
         i++;
         printf("!FIN! dans chaine[%d], il y a : %s\n", i, chaine);
         fgets(chaine, T_MAX, fichier);
         printf("OK");
-    } while (fgets(chaine,T_MAX,fichier)!=NULL);
+    } while (fgets(chaine, T_MAX, fichier) != NULL);
     printf("Fill tab ok");
 }
 
-void code_test(char *s) // tests du code assembleur(2 premieres lettres de l'instruction)
-{
-    char *buf = strtok(s, " "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
-    long cod = strtol(buf, NULL, 16);
+void code_test(char *s){ // tests du code assembleur(2 premieres lettres de l'instruction)
+    char *instBuffer = strtok(s, " "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
+
+    //debug
+    printf("instruction buffer : %s", instBuffer);
+
+    long cod = strtol(instBuffer, NULL, 16);
     switch (cod) {
         case 0:
             push(s);
@@ -271,13 +264,16 @@ int main() {
         Fill_tab_instructions(fichier);
         printf("test1");
         fclose(fichier);
+        exit(1);
 
         while (T[PC] != NULL && p == 1) { // on regarde chaque instruction du tableau
+            //exit(1);
             printf("t(pc) = %s", T[PC]);
             code_test(T[PC]);
             printf("p = %d", p);
         }
         printf("end of program");
+        exit(1);
     }
     else printf("impossible d'ouvrir le fichier");
     return 0;

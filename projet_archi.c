@@ -60,7 +60,7 @@ int argtype(char* str){
 		1 = un nombre
 		2 = une chaîne
 	 */
-	int i;
+	int i=-1;
 	if (!strcmp(str, "push")) {
 		i=1;
 	}else if (!strcmp(str, "iPush")){
@@ -212,9 +212,6 @@ int main(){
 		} else {
 			word = strtok(str, " \t\r\n");
 		}
-
-		//Teste l'existence de l'instruction
-		int functiontest = instructions(word);
 
 		//Met l'argument dans arg
 		arg = strtok(NULL, " \t\r\n:");
