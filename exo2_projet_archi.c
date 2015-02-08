@@ -147,7 +147,7 @@ void jpz(char *s){
 
 void call(char *s){
     long a = strtol(s, NULL, 16);
-    mem[SP++] = (long) &T[PC];
+    mem[SP++] = (long) &insTab[PC].instruction;
     PC += a;
 }
 
@@ -184,16 +184,16 @@ void halt() {
 void Fill_tab_instructions(FILE *fichier){ // remplissage du tab d'instructions
     int i = 0;
     char chaine[T_MAX];
-    do {
+    while (fgets(chaine, T_MAX, fichier) != NULL){
         strcpy(insTab[i].instruction, chaine);
-        printf("!DEBUT! dans chaine[%d], il y a : %s", i, chaine);
+        //printf("!DEBUT! dans insTab[%d], il y a : %s", i, chaine);
         //T[i] = chaine;
-        printf("dans T[%d], il y a : %s", i, insTab[i].instruction);
+        //printf("dans T[%d], il y a : %s", i, insTab[i].instruction);
         i++;
-        printf("!FIN! dans chaine[%d], il y a : %s\n", i, chaine);
+        //printf("!FIN! dans chaine[%d], il y a : %s\n", i, chaine);
         fgets(chaine, T_MAX, fichier);
-        printf("OK");
-    } while (fgets(chaine, T_MAX, fichier) != NULL);
+        //printf("OK");
+    }
     printf("Fill tab ok");
 }
 
@@ -201,7 +201,10 @@ void code_test(char *s){ // tests du code assembleur(2 premieres lettres de l'in
     char *instBuffer = strtok(s, " "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
 
     //debug
-    printf("instruction buffer : %s", instBuffer);
+    //exit(1);
+
+    //debug
+    printf("instruction buffer : %s\n", instBuffer);
 
     long cod = strtol(instBuffer, NULL, 16);
     switch (cod) {
@@ -257,20 +260,21 @@ void code_test(char *s){ // tests du code assembleur(2 premieres lettres de l'in
 
 
 int main() {
-    FILE *fichier = NULL;
-    srand((unsigned int) time(NULL)); // nombre aleatoire.
-    fichier = fopen("out.txt", "r+");
-    if (fichier != NULL) {
-        Fill_tab_instructions(fichier);
-        printf("test1");
-        fclose(fichier);
-        exit(1);
+    FILE* file = NULL;
+    srand((unsigned int) time(NULL)); // nombre aleatoire
+    file = fopen("out.txt", "r+");
+    if (file != NULL){
+        Fill_tab_instructions(file);
+        //printf("test1");
+        fclose(file);
+        //exit(1);
+        printf("t(%d) = %s", PC, insTab[PC].instruction);
 
-        while (T[PC] != NULL && p == 1) { // on regarde chaque instruction du tableau
+        while (insTab[PC].instruction != NULL && p == 1) { // on regarde chaque instruction du tableau
             //exit(1);
-            printf("t(pc) = %s", T[PC]);
-            code_test(T[PC]);
-            printf("p = %d", p);
+            printf("t(%d) = %s", PC, insTab[PC].instruction);
+            code_test(insTab[PC].instruction);
+            //printf("p = %d\n", p);
         }
         printf("end of program");
         exit(1);
