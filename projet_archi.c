@@ -128,6 +128,8 @@ Label* createLabelTab(int line_count){
 	strtok(str, " \t\r\n:") renvoie un pointeur dans str vers une chaine finissant par un espace, tab, CR ou LF suivi de ":"
 		char str[T_MAX] = "Je suis Charlie"
 		mot = strtok(str, "suis") met "Je " dans mot
+		ET str = "suis";
+		mot2 = strtok(NULL, "\n") prends la suite (Charlie) et met dans mot2
  */
 void fillLabelTab(FILE* file, Label* label_tab){
 	char str[T_MAX];

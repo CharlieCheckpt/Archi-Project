@@ -16,6 +16,7 @@ typedef struct {
 
 
 Line insTab[LINES_MAX]; // tableau d'instructions
+int line_counter = 0;
 long mem[5000]; // tab representant la memoire dans laquelle est stockee la pile, ainsi que les variables
 int PC = 0; // "pointe" sur une cellule du tableau d'instructions. adresse de la prochaine execution a executer
 int SP = 0; // num de la 1ere case libre de la pile(dans mem)
@@ -135,6 +136,7 @@ void op(char *s){
 }
 
 void jmp(char *s){
+    //PROBLEME STRTOL ET NEGATIFS !!!!!!!!!!!!
     long a = strtol(s, NULL, 16);
     PC += a;
 }
@@ -142,6 +144,7 @@ void jmp(char *s){
 void jpz(char *s){
     long a = strtol(s, NULL, 16);
     long x = mem[--SP];
+    PC++;
     if (x == 0) PC += a;
 }
 
@@ -185,29 +188,28 @@ void Fill_tab_instructions(FILE *fichier){ // remplissage du tab d'instructions
     int i = 0;
     char chaine[T_MAX];
     while (fgets(chaine, T_MAX, fichier) != NULL){
+        line_counter++;
         strcpy(insTab[i].instruction, chaine);
         //printf("!DEBUT! dans insTab[%d], il y a : %s", i, chaine);
         //T[i] = chaine;
         //printf("dans T[%d], il y a : %s", i, insTab[i].instruction);
         i++;
         //printf("!FIN! dans chaine[%d], il y a : %s\n", i, chaine);
-        fgets(chaine, T_MAX, fichier);
+        //fgets(chaine, T_MAX, fichier);
         //printf("OK");
     }
-    printf("Fill tab ok");
+    printf("Fill tab ok\n");
+    printf("line counter : %d\n", line_counter);
 }
 
 void code_test(char *s){ // tests du code assembleur(2 premieres lettres de l'instruction)
     char *instBuffer = strtok(s, " "); // si s=0D 000003E8 --> s= 000003E8 et buf=0D
-
+    s = strtok(NULL, "\n");
     //debug
-    //exit(1);
+    printf("instruction buffer : %s et s = %s\n", instBuffer, s);
 
-    //debug
-    printf("instruction buffer : %s\n", instBuffer);
-
-    long cod = strtol(instBuffer, NULL, 16);
-    switch (cod) {
+    //long cod = strtol(instBuffer, NULL, 16);
+    switch (strtol(instBuffer, NULL, 16)) {
         case 0:
             push(s);
             break;
@@ -268,10 +270,9 @@ int main() {
         //printf("test1");
         fclose(file);
         //exit(1);
-        printf("t(%d) = %s", PC, insTab[PC].instruction);
 
-        while (insTab[PC].instruction != NULL && p == 1) { // on regarde chaque instruction du tableau
-            //exit(1);
+        while (PC < line_counter && p == 1) { // on regarde chaque instruction du tableau
+            if (insTab[PC+2].instruction == '\0') exit(1);
             printf("t(%d) = %s", PC, insTab[PC].instruction);
             code_test(insTab[PC].instruction);
             //printf("p = %d\n", p);
