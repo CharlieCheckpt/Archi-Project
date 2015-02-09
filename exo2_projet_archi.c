@@ -136,7 +136,7 @@ void op(char *s){
 }
 
 void jmp(char *s){
-    //PROBLEME STRTOL ET NEGATIFS !!!!!!!!!!!!
+    //PROBLEME STRTOL ET NEGATIFS !!!!!!!!
     long a = strtol(s, NULL, 16);
     PC += a;
 }
