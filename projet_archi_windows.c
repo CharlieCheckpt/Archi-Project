@@ -10,7 +10,7 @@ int line_n = 0;
 
 //Label
 typedef struct{
-	char label[T_MAX];
+	char label[T_MAX]; // tableau d'étiquettes
 } Label;
 
 //Intructions to int & test
@@ -54,7 +54,7 @@ int instructions(char* str){
 }
 
 //Argument type
-int argtype(char* str){
+int argtype(char* str){ //
 	/*
 		0 = pas d'argument
 		1 = un nombre
@@ -99,9 +99,12 @@ int argtype(char* str){
 int countLines(FILE* file){
 	int line_number = 0;
 	char str[T_MAX];
-	while(fgets(str,T_MAX,file)!='\0') {
-		//printf("line nb = %d\n", line_number);
-		line_number++;
+	while(fgets(str,T_MAX,file)) {
+        line_number++;
+        if(!strcmp(str, "\n")){
+            printf("ERROR: empty line not allowed at line %d\n", line_number);
+            exit(1);
+        }
 	}
 	return line_number;
 }
@@ -135,6 +138,7 @@ void fillLabelTab(FILE* file, Label* label_tab){
 	int i = -1;
 	while(fgets(str,T_MAX,file)) {
 		i++;
+		// on va regarder par rapport au nombre de ligne
 		if (strstr(str, ":") != NULL) {
 			word = strtok(str, " \t\r\n:");
 
@@ -269,7 +273,7 @@ int main(){
 	fclose(file2);
 
 	free(label_tab); //Liberation de la memoire
-	printf("It's OKAY !! :D");
+	printf("It's OKAY !! :D\n");
     return 0;
 }
 

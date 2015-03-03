@@ -99,9 +99,12 @@ int argtype(char* str){
 int countLines(FILE* file){
 	int line_number = 0;
 	char str[T_MAX];
-	while(fgets(str,T_MAX,file)!='\0') {
-		//printf("line nb = %d\n", line_number);
-		line_number++;
+	while(fgets(str,T_MAX,file)) {
+        line_number++;
+        if(!strcmp(str, "\n")){
+            printf("ERROR: empty line not allowed at line %d\n", line_number);
+            exit(1);
+        }
 	}
 	return line_number;
 }
@@ -197,7 +200,7 @@ int main(){
 	//creation fichier a exporter
 	file=fopen(INPUT_FILE,"r+");
 	file2=fopen("out.txt","w");
-	
+
 	char str[T_MAX];
 	char *word; //mot a transformer en nombre avec la fonction instrucstions
 	char *arg; //argument de type chaine de caracteres
