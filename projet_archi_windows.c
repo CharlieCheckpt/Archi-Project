@@ -5,13 +5,9 @@
 #define T_MAX 256
 #define INPUT_FILE "assembleur_test.txt"
 
-typedef struct Label;
 int instructions(char *str);
 int argtype(char *str);
 int countLines(FILE *file);
-Label *createLabelTab(int line_count);
-void fillLabelTab(FILE *file, Label *label_tab);
-int findLabel(char *str, Label *label_tab);
 int is_int(char const *str);
 
 
@@ -20,7 +16,7 @@ int line_n = 0;
 
 //Label definition
 typedef struct {
-    char label[T_MAX]; // tableau d'�tiquettes
+    char label[T_MAX]; // tableau d'étiquettes
 } Label;
 
 //Intructions to int & test
@@ -68,7 +64,7 @@ int argtype(char *str) { //
     /*
         0 = pas d'argument
         1 = un nombre
-        2 = une cha�ne
+        2 = une chaine
      */
     int i;
     if (!strcmp(str, "push")) {
@@ -131,7 +127,7 @@ Label *createLabelTab(int line_count) {
 
 //Label table filling
 /*
-	fgets(str,T_MAX,file) lit T_MAX-1 caract�res de fichier file et le met dans str
+	fgets(str,T_MAX,file) lit T_MAX-1 caracteres de fichier file et le met dans str
 
 	strstr(str, ":") renvoie un pointeur dans str qui pointe vers une chaine commencant par ":"
 		char str[T_MAX] = "Mon chat est blanc"
@@ -169,7 +165,7 @@ int findLabel(char *str, Label *label_tab) {
             return i;
         }
     }
-    printf("ERROR: label not found: %s at line %d\n", str, line_n);
+    printf("ERROR: label not found: '%s' at line %d\n", str, line_n);
     exit(1);
 }
 
@@ -236,7 +232,7 @@ int main() {
             //On attend aucun argument
         if (argtype(word) == 0) {
             if (arg != NULL) {
-                printf("ERROR: too many arguments to function �%s� at line %d\n", word, line_n);
+                printf("ERROR: too many arguments to function '%s' at line %d\n", word, line_n);
                 exit(1);
             }
             argint = 0;
@@ -244,13 +240,13 @@ int main() {
             //On attend un nombre
         else if (argtype(word) == 1) {
             if (arg == NULL) {
-                printf("ERROR: too few arguments to function �%s� at line %d\n", word, line_n);
+                printf("ERROR: too few arguments to function '%s' at line %d\n", word, line_n);
                 exit(1);
             } else if (is_int(arg) == 0) {
-                printf("ERROR: expected �int� argument to function �%s� at line %d\n", word, line_n);
+                printf("ERROR: expected 'int' argument to function '%s' at line %d\n", word, line_n);
                 exit(1);
             } else if (strtok(NULL, " \t\r\n") != NULL) {
-                printf("ERROR: too many arguments to function �%s� at line %d\n", word, line_n);
+                printf("ERROR: too many arguments to function '%s' at line %d\n", word, line_n);
                 exit(1);
             }
             argint = atoi(arg);
@@ -259,13 +255,10 @@ int main() {
             //On attend une etiquette
         else if (argtype(word) == 2) {
             if (arg == NULL) {
-                printf("ERROR: too few arguments to function �%s� at line %d\n", word, line_n);
-                exit(1);
-            } else if (is_int(arg) == 1) {
-                printf("ERROR: expected �char *� but argument is of type �int� at line %d\n", line_n);
+                printf("ERROR: too few arguments to function '%s' at line %d\n", word, line_n);
                 exit(1);
             } else if (strtok(NULL, " \t\r\n") != NULL) {
-                printf("ERROR: too many arguments to function �%s� at line %d\n", word, line_n);
+                printf("ERROR: too many arguments to function '%s' at line %d\n", word, line_n);
                 exit(1);
             }
             argint = findLabel(arg, label_tab) - line_n; //difference entre la position actuelle et de l'etiquette
@@ -283,5 +276,5 @@ int main() {
 }
 
 /*
-Copyright � 2014, Philippe NGUYEN & Charlie Saillard
+Copyright (c) 2014, Philippe NGUYEN & Charlie Saillard
 */
